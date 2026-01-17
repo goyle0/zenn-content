@@ -113,7 +113,7 @@ installutil.exe /u Monaka.exe
 ## コマンドまとめ
 
 | 操作 | コマンド |
-|------|---------|
+|------|----------|
 | インストール | `installutil.exe [サービス名].exe` |
 | アンインストール | `installutil.exe /u [サービス名].exe` |
 
