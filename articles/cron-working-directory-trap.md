@@ -238,3 +238,5 @@ echo "[$(date '+%F %T')] バックアップ完了" >> "$LOG_FILE"
 
 - [crontab(5) - Linux manual page](https://man7.org/linux/man-pages/man5/crontab.5.html)
 - [Cron - ArchWiki](https://wiki.archlinux.org/title/Cron)
+
+<!-- Updated: 2026-01-24 -->

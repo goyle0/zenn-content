@@ -397,3 +397,5 @@ Sleep状態で長時間放置されたトランザクションが原因の場合
 
 - [MySQL公式ドキュメント - InnoDB Locking](https://dev.mysql.com/doc/refman/8.0/en/innodb-locking.html)
 - [MySQL公式ドキュメント - innodb_lock_wait_timeout](https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_lock_wait_timeout)
+
+<!-- Updated: 2026-01-24 -->
