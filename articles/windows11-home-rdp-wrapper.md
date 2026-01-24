@@ -175,5 +175,3 @@ Windows 11 HomeでもRDP Wrapperを使用することでリモートデスクト
 
 - [RDP Wrapper (GitHub)](https://github.com/stascorp/rdpwrap)
 - [最新INIファイル (GitHub)](https://github.com/sebaxakerhtc/rdpwrap.ini)
-
-<!-- Updated: 2026-01-24 -->

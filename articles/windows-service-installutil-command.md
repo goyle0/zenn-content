@@ -132,5 +132,3 @@ sc delete YourServiceName
 
 - [Installutil.exe (インストーラー ツール) - Microsoft Learn](https://learn.microsoft.com/ja-jp/dotnet/framework/tools/installutil-exe-installer-tool)
 - [Windows サービス アプリケーションの概要 - Microsoft Learn](https://learn.microsoft.com/ja-jp/dotnet/framework/windows-services/introduction-to-windows-service-applications)
-
-<!-- Updated: 2026-01-24 -->

@@ -306,5 +306,3 @@ Markdown記号を**記号として表示**したい場合。
 - [ZennのMarkdown記法一覧](https://zenn.dev/zenn/articles/markdown-guide)
 - [Markdown Guide - Hacks](https://www.markdownguide.org/hacks/)
 - [Qiita Markdown記法チートシート](https://qiita.com/Qiita/items/c686397e4a0f4f11683d)
-
-<!-- Updated: 2026-01-24 -->

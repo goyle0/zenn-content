@@ -148,5 +148,3 @@ sc delete [サービス名]
 
 - [方法: Windows サービスをインストールおよびアンインストールする - Microsoft Learn](https://learn.microsoft.com/ja-jp/dotnet/framework/windows-services/how-to-install-and-uninstall-services)
 - [Installutil.exe (インストーラー ツール) - Microsoft Learn](https://learn.microsoft.com/ja-jp/dotnet/framework/tools/installutil-exe-installer-tool)
-
-<!-- Updated: 2026-01-24 -->

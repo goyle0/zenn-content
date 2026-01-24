@@ -145,5 +145,3 @@ published: true
 
 - [3層アーキテクチャーとは | IBM](https://www.ibm.com/jp-ja/think/topics/three-tier-architecture)
 - [多層アーキテクチャ - Wikipedia](https://ja.wikipedia.org/wiki/多層アーキテクチャ)
-
-<!-- Updated: 2026-01-24 -->
