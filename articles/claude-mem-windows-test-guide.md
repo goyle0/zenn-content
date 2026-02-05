@@ -10,7 +10,7 @@ published: true
 
 Claude Codeのセッション履歴を永続化・検索できるプラグイン「[claude-mem](https://github.com/thedotmack/claude-mem)」を**Windows環境**にインストールし、正常に動作するかテストした手順をまとめました。
 
-Zennや公式ドキュメントにはmacOS/Linux向けの情報が多く、**Windowsでは`~`（チルダ）がホームディレクトリとして展開されない**などのハマりポイントがあります。この記事ではWindows固有の注意点を中心に解説します。
+元記事の手順ではWindows環境で対応できない問題があったため、**修正版**として手順を更新しています。
 
 ### 対象読者
 
@@ -23,118 +23,166 @@ Zennや公式ドキュメントにはmacOS/Linux向けの情報が多く、**Win
 | 項目 | バージョン |
 |------|-----------|
 | OS | Windows 10/11 |
-| Node.js | v22.17.0 |
-| bun | 1.3.8 |
+| Node.js | v18以上 |
+| Bun | 自動インストールされる |
 | claude-mem | 9.0.12 |
 
 ---
 
-## 1. インストール
+## 元記事からの修正点
 
-### 1-1. 前提条件
+| 項目 | 元記事 | 修正版 |
+|------|--------|--------|
+| インストールコマンド | `claude plugins install claude-mem` | `/plugin marketplace add` + `/plugin install`（スラッシュコマンド） |
+| プラグイン登録 | 自動 | `installed_plugins.json` の手動編集が必要な場合あり |
+| 依存関係 | 記載なし | `npm install` + `npm run build` が必要 |
+| ワーカー起動 | 手動管理前提 | フックによる自動管理（メンテナンスフリー） |
 
-以下がインストール済みであることを確認してください。
+---
 
-```powershell
-# Node.js（18以上が必要）
-node --version
+## 1. インストール手順
 
-# bun（claude-memの一部機能で使用）
-bun --version
-```
+### Step 1: マーケットプレイスの追加
 
-### 1-2. プラグインのインストール
-
-Claude Codeのプラグインとしてインストールします。
-
-```bash
-claude plugins install claude-mem
-```
-
-### 1-3. インストール後のファイル確認
-
-Windowsでは以下のパスにファイルが配置されます。
+Claude Code内で以下のスラッシュコマンドを実行：
 
 ```
-C:\Users\<ユーザー名>\.claude\plugins\marketplaces\thedotmack\
-├── plugin\
-│   └── scripts\
-│       ├── CLAUDE.md
-│       ├── context-generator.cjs
-│       ├── mcp-server.cjs
-│       ├── smart-install.js
-│       ├── worker-cli.js          ← ワーカー操作用CLI
-│       ├── worker-service.cjs     ← ワーカー本体
-│       └── worker-wrapper.cjs
-├── node_modules\
-├── src\
-└── tests\
+/plugin marketplace add thedotmack/claude-mem
 ```
 
-ファイルが正しく配置されたか確認するコマンド：
+**期待される出力**:
 
-```cmd
-dir "%USERPROFILE%\.claude\plugins\marketplaces\thedotmack\plugin\scripts"
+```
+Successfully added marketplace: thedotmack
+```
+
+### Step 2: プラグインのインストール
+
+```
+/plugin install claude-mem
 ```
 
 :::message alert
-**Windowsの注意点：`~`（チルダ）は使えない**
-
-公式ドキュメントやmacOS向け記事では `~/.local/share/claude-mem/` のようなパスが書かれていますが、Windowsのコマンドプロンプトでは `~` がホームディレクトリに展開されません。
-
-```cmd
-# ❌ これはWindowsでは動かない
-node ~/.local/share/claude-mem/plugin/scripts/worker-cli.js start
-
-# ✅ こちらを使う
-node "%USERPROFILE%\.claude\plugins\marketplaces\thedotmack\plugin\scripts\worker-cli.js" start
-```
-
-`%USERPROFILE%` は `C:\Users\<ユーザー名>` に展開されます。
+**注意**: このコマンドがハングする、または「Plugin not found」エラーが出る場合は、Step 3の手動対応を実行してください。
 :::
 
----
+### Step 3: 手動対応（Step 2が失敗した場合）
 
-## 2. ワーカーサービスの起動
+#### 3-1. プラグイン登録の確認・追加
 
-claude-memはバックグラウンドで動くワーカーサービスとして動作します。
+`%USERPROFILE%\.claude\plugins\installed_plugins.json` を編集：
 
-### 2-1. 起動
-
-```cmd
-node "%USERPROFILE%\.claude\plugins\marketplaces\thedotmack\plugin\scripts\worker-cli.js" start
-```
-
-正常に起動すると以下のように表示されます：
-
-```
-Worker started (PID: 54076)
-Logs: ~/.claude-mem/logs/worker-2026-02-04.log
+```json
+{
+  "version": 2,
+  "plugins": {
+    "claude-mem@thedotmack": [
+      {
+        "scope": "user",
+        "installPath": "C:\\Users\\<ユーザー名>\\.claude\\plugins\\marketplaces\\thedotmack\\plugin",
+        "version": "9.0.12",
+        "installedAt": "2026-02-05T12:00:00.000Z",
+        "lastUpdated": "2026-02-05T12:00:00.000Z",
+        "isLocal": false
+      }
+    ]
+  }
+}
 ```
 
 :::message
-bun で直接起動する方法もあります（フォアグラウンド実行）：
-
-```cmd
-bun "%USERPROFILE%\.claude\plugins\marketplaces\thedotmack\plugin\scripts\worker-service.cjs"
-```
-
-この場合、コマンドプロンプトを閉じるとワーカーも停止します。
+- `<ユーザー名>` は実際のユーザー名に置き換えてください
+- 既存のプラグインがある場合は追記してください
 :::
 
-### 2-2. 停止
+#### 3-2. 依存関係のインストールとビルド
 
-```cmd
-node "%USERPROFILE%\.claude\plugins\marketplaces\thedotmack\plugin\scripts\worker-cli.js" stop
+PowerShell/コマンドプロンプトで実行：
+
+```powershell
+cd %USERPROFILE%\.claude\plugins\marketplaces\thedotmack
+npm install
+npm run build
 ```
 
-### 2-3. デフォルトポート
+**期待される出力**:
 
-ワーカーサービスは **ポート37777** で待ち受けます。
+```
+✅ Worker service, MCP server, and context generator built successfully!
+```
+
+### Step 4: ワーカーサービスの起動
+
+```powershell
+cd %USERPROFILE%\.claude\plugins\marketplaces\thedotmack
+npm run worker:start
+```
+
+**期待される出力**:
+
+```json
+{"continue":true,"suppressOutput":true,"status":"ready"}
+```
+
+### Step 5: 動作確認
+
+```powershell
+curl -s http://127.0.0.1:37777/api/readiness
+```
+
+**正常な応答**:
+
+```json
+{"status":"ready","mcpReady":true}
+```
+
+Web UIでも確認できます: http://localhost:37777
 
 ---
 
-## 3. 起動テスト
+## 2. ワーカーサービスの自動管理
+
+**claude-memはメンテナンスフリー設計です。**
+
+`hooks.json` により以下のタイミングで自動管理されます：
+
+| フック | タイミング | 動作 |
+|--------|----------|------|
+| `SessionStart` | Claude Code起動時 | ワーカー自動起動 |
+| `UserPromptSubmit` | プロンプト送信時 | ワーカー状態確認・起動 |
+| `PostToolUse` | ツール使用後 | ワーカー状態確認・起動 |
+
+:::message
+**手動でのワーカー管理は不要**です。Claude Codeを再起動すれば自動的にワーカーが起動します。
+:::
+
+---
+
+## 3. 手動コマンド（参考）
+
+必要な場合のみ使用してください：
+
+```powershell
+# ワーカー起動
+npm run worker:start
+
+# ワーカー停止
+npm run worker:stop
+
+# ワーカー状態確認
+npm run worker:status
+
+# 再ビルド
+npm run build
+```
+
+:::message
+上記コマンドは `%USERPROFILE%\.claude\plugins\marketplaces\thedotmack` ディレクトリで実行してください。
+:::
+
+---
+
+## 4. 起動テスト
 
 ワーカーが正常に動作しているか、各APIを叩いて確認します。
 
@@ -150,7 +198,7 @@ node "%USERPROFILE%\.claude\plugins\marketplaces\thedotmack\plugin\scripts\worke
 | 6 | Search by-type | タイプ別検索 |
 | 7 | ポート確認 | ネットワーク接続状態 |
 
-### 3-1. Readiness（準備完了確認）
+### 4-1. Readiness（準備完了確認）
 
 ```cmd
 curl -s http://127.0.0.1:37777/api/readiness
@@ -167,7 +215,7 @@ curl -s http://127.0.0.1:37777/api/readiness
 | status | `ready` | ワーカーが準備完了 |
 | mcpReady | `true` | MCPサーバーとの連携も準備完了 |
 
-### 3-2. Health（健康状態確認）
+### 4-2. Health（健康状態確認）
 
 ```cmd
 curl -s http://127.0.0.1:37777/api/health
@@ -195,7 +243,7 @@ curl -s http://127.0.0.1:37777/api/health
 | initialized | `true` であること |
 | mcpReady | `true` であること |
 
-### 3-3. Stats（統計情報確認）
+### 4-3. Stats（統計情報確認）
 
 ```cmd
 curl -s http://127.0.0.1:37777/api/stats
@@ -232,7 +280,7 @@ curl -s http://127.0.0.1:37777/api/stats
 インストール直後は `observations`、`sessions`、`summaries` がすべて `0` です。Claude Codeでセッションを使っていくと自動的に記録が蓄積されます。
 :::
 
-### 3-4. Observations（観察一覧）
+### 4-4. Observations（観察一覧）
 
 ```cmd
 curl -s http://127.0.0.1:37777/api/observations
@@ -246,7 +294,7 @@ curl -s http://127.0.0.1:37777/api/observations
 
 APIが正常に応答すればOKです。初回はデータが空（`items: []`）なのは正常です。
 
-### 3-5. Search（キーワード検索）
+### 4-5. Search（キーワード検索）
 
 ```cmd
 curl -s "http://127.0.0.1:37777/api/search?query=test"
@@ -260,7 +308,7 @@ curl -s "http://127.0.0.1:37777/api/search?query=test"
 
 データが空でもAPIが正常に応答すればOKです。
 
-### 3-6. Search by-type（タイプ別検索）
+### 4-6. Search by-type（タイプ別検索）
 
 ```cmd
 curl -s "http://127.0.0.1:37777/api/search/by-type?type=bugfix"
@@ -272,7 +320,7 @@ curl -s "http://127.0.0.1:37777/api/search/by-type?type=bugfix"
 {"content":[{"type":"text","text":"No observations found with type \"bugfix\""}]}
 ```
 
-### 3-7. ポート確認
+### 4-7. ポート確認
 
 ```cmd
 netstat -ano | findstr "37777"
@@ -288,7 +336,7 @@ TCP    127.0.0.1:37777    0.0.0.0:0    LISTENING    42876
 
 ---
 
-## 4. テスト結果の見方
+## 5. テスト結果の見方
 
 すべてのテストが完了したら、以下の表で判定します。
 
@@ -306,57 +354,15 @@ TCP    127.0.0.1:37777    0.0.0.0:0    LISTENING    42876
 
 ---
 
-## 5. 便利なエイリアス設定（Windows版）
-
-毎回長いパスを入力するのは大変なので、バッチファイルやPowerShellのエイリアスを設定しておくと便利です。
-
-### 方法1：バッチファイルを作る
-
-`C:\Users\<ユーザー名>\bin\` フォルダを作り、PATHに追加しておきます。
-
-**cmem-start.bat**
-
-```bat
-@echo off
-node "%USERPROFILE%\.claude\plugins\marketplaces\thedotmack\plugin\scripts\worker-cli.js" start
-```
-
-**cmem-stop.bat**
-
-```bat
-@echo off
-node "%USERPROFILE%\.claude\plugins\marketplaces\thedotmack\plugin\scripts\worker-cli.js" stop
-```
-
-**cmem-status.bat**
-
-```bat
-@echo off
-curl -s http://127.0.0.1:37777/api/readiness
-```
-
-### 方法2：PowerShellプロファイルにエイリアスを追加
-
-`$PROFILE` ファイル（通常 `C:\Users\<ユーザー名>\Documents\PowerShell\Microsoft.PowerShell_profile.ps1`）に以下を追加：
-
-```powershell
-function cmem-start {
-    node "$env:USERPROFILE\.claude\plugins\marketplaces\thedotmack\plugin\scripts\worker-cli.js" start
-}
-function cmem-stop {
-    node "$env:USERPROFILE\.claude\plugins\marketplaces\thedotmack\plugin\scripts\worker-cli.js" stop
-}
-function cmem-status {
-    curl -s http://127.0.0.1:37777/api/readiness
-}
-function cmem-stats {
-    curl -s http://127.0.0.1:37777/api/stats
-}
-```
-
----
-
 ## 6. トラブルシューティング
+
+| 症状 | 原因 | 解決策 |
+|------|------|--------|
+| `Plugin not found` | マーケットプレイス未追加 | `/plugin marketplace add thedotmack/claude-mem` を実行 |
+| `/plugin install` がハング | 不明（Windows環境での問題） | Step 3の手動対応を実行 |
+| ワーカーが起動しない | ビルド未実行 | `npm install && npm run build` を実行 |
+| `mcpReady: false` | 依存関係の問題 | `npm install` を再実行 |
+| ポート37777が使用中 | 他プロセスが占有 | `netstat -ano | findstr "37777"` でPID確認後、`taskkill /PID <PID> /F` で終了 |
 
 ### エラー：「Cannot find module」
 
@@ -368,50 +374,31 @@ Error: Cannot find module 'C:\Users\<ユーザー名>\~\.local\share\claude-mem\
 
 **対処：** `~` の代わりに `%USERPROFILE%`（cmd）または `$env:USERPROFILE`（PowerShell）を使う
 
-### エラー：「Worker did not become ready within 15 seconds」
+---
 
-**原因：** ワーカーサービスが起動していない
+## 7. ディレクトリ構成
 
-**対処：**
-
-```cmd
-rem 1. ワーカーを起動
-node "%USERPROFILE%\.claude\plugins\marketplaces\thedotmack\plugin\scripts\worker-cli.js" start
-
-rem 2. 状態確認
-curl -s http://127.0.0.1:37777/api/readiness
 ```
-
-### エラー：ポート37777が既に使用中
-
-**確認：**
-
-```cmd
-netstat -ano | findstr "37777"
-```
-
-**対処：**
-
-```cmd
-rem 表示されたPIDのプロセスを終了
-taskkill /PID <PID番号> /F
-
-rem ワーカーを再起動
-node "%USERPROFILE%\.claude\plugins\marketplaces\thedotmack\plugin\scripts\worker-cli.js" start
-```
-
-### エラー：「thedotmack/package.json が見つからない」
-
-**対処：**
-
-```cmd
-mkdir "%USERPROFILE%\.claude\plugins\marketplaces\thedotmack"
-echo {"name": "claude-mem", "version": "9.0.12"} > "%USERPROFILE%\.claude\plugins\marketplaces\thedotmack\package.json"
+%USERPROFILE%\
+├── .claude\
+│   └── plugins\
+│       ├── installed_plugins.json  ← プラグイン登録
+│       └── marketplaces\
+│           └── thedotmack\         ← claude-memリポジトリ
+│               ├── plugin\         ← ビルド済みプラグイン
+│               │   ├── hooks\
+│               │   ├── scripts\
+│               │   └── skills\
+│               └── src\            ← ソースコード
+└── .claude-mem\
+    ├── settings.json               ← 設定ファイル
+    ├── claude-mem.db               ← データベース
+    └── logs\                       ← ログファイル
 ```
 
 ---
 
-## 7. 主要APIエンドポイント一覧
+## 8. 主要APIエンドポイント一覧
 
 | エンドポイント | メソッド | 説明 |
 |---------------|---------|------|
@@ -432,15 +419,25 @@ echo {"name": "claude-mem", "version": "9.0.12"} > "%USERPROFILE%\.claude\plugin
 | プラグイン名 | claude-mem |
 | バージョン | 9.0.12 |
 | ワーカーポート | 37777 |
-| Windows起動コマンド | `node "%USERPROFILE%\.claude\plugins\marketplaces\thedotmack\plugin\scripts\worker-cli.js" start` |
+| インストールコマンド | `/plugin marketplace add thedotmack/claude-mem` → `/plugin install claude-mem` |
 | 状態確認 | `curl -s http://127.0.0.1:37777/api/readiness` |
+| 自動管理 | hooks.jsonによりClaude Code起動時に自動起動 |
 
-Windows環境での導入は、パスの書き方に注意すればスムーズに進みます。一番のハマりポイントは `~` がWindowsでは展開されないことです。`%USERPROFILE%` に置き換えることを覚えておけば、公式ドキュメントやmacOS向け記事のコマンドもそのまま応用できます。
+Windows環境での導入は、スラッシュコマンドが正常に動作しない場合があるため、手動対応手順を把握しておくことが重要です。一度セットアップが完了すれば、hooks.jsonによる自動管理でメンテナンスフリーで運用できます。
 
 ---
 
 ## 参考リンク
 
 - [claude-mem GitHub リポジトリ](https://github.com/thedotmack/claude-mem)
-- [claude-memプラグインの導入と使い方（Zenn）](https://zenn.dev/nenene01/articles/claude-mem-setup-guide)
+- [Claude-Mem Installation Guide](https://docs.claude-mem.ai/installation)
 - [Claude Code 公式ドキュメント](https://docs.anthropic.com/claude-code)
+
+---
+
+## 改訂履歴
+
+| 日付 | 内容 |
+|------|------|
+| 2026-02-04 | 初版作成 |
+| 2026-02-05 | 修正版に更新（スラッシュコマンド方式、手動対応手順、ワーカー自動管理の説明を追加） |
