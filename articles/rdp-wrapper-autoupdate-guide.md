@@ -1,5 +1,5 @@
 ---
-title: "【Windows Home】RDP Wrapper + autoupdate v1.4 導入ガイド ― Windows Update後も自動復旧"
+title: "【Windows Home】RDP Wrapper + autoupdate v1.4 導入ガイド"
 emoji: "🖥️"
 type: "tech"
 topics: ["windows", "rdp", "remotedesktop", "rdpwrapper"]
