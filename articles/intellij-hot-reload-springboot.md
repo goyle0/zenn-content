@@ -61,6 +61,41 @@ DevToolsは、コードの変更を検知して**アプリケーションを高�
 
 以上の3ステップで設定は完了です。アプリケーションを起動した状態でJavaファイルを編集・保存すると、数秒後に自動で変更が反映されます。
 
+## ホットリロードが有効か確認する方法
+
+設定が正しくできているか不安な方は、以下の方法で確認できます。
+
+### 確認方法1：起動時のコンソールログを確認
+
+アプリケーションを起動した際、コンソールに以下のようなメッセージが表示されていれば、DevToolsが有効になっています。
+
+```
+INFO  --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer : LiveReload server is running on port 35729
+```
+
+ポイントは2つです。
+
+- `restartedMain` というスレッド名が表示されている（通常は `main`）
+- `LiveReload server is running` というメッセージがある
+
+### 確認方法2：コード変更後のコンソールを確認
+
+実際にJavaファイルを少し変更して保存してみてください。ホットリロードが効いていれば、コンソールに以下のような再起動ログが流れます。
+
+```
+INFO  --- [devtools-restart] .ConditionEvaluationDeltaLoggingListener : ...
+INFO  --- [restartedMain] c.e.demo.Application : Started Application in 1.2 seconds
+```
+
+数秒でSpring Bootのバナーが再表示されれば、ホットリロードが正常に動作しています。
+
+### 確認方法3：何も起きない場合
+
+保存しても何も起きない場合は、以下を確認してください。
+
+- `pom.xml`にDevToolsを追加した後、**Mavenの再読み込み**（pom.xmlを右クリック →「Mavenプロジェクトの再ロード」）を実行したか
+- アプリケーションを**一度停止して再起動**したか（DevTools追加後は初回再起動が必要）
+
 ## 補足：手動でリロードする方法
 
 DevToolsの自動リロードとは別に、IntelliJには**手動で変更を反映する方法**もあります。
