@@ -1,0 +1,13 @@
+title: "病院ネットワーク運用の備忘録 ― 有線・無線・セキュリティの基礎とtips（2026年版）"
+summary: "医療機関のネットワークを運用・支援するなかで学んだことを、自分の言葉で整理した備忘録です。運用管理の基本、有線ネットワークの基礎、無線LANの設計とセキュリティ、トラブルシュートの手順、セキュリティ対策の考え方を、専門用語をかみ砕きながらまとめています。2026年時点の規格・ガイドライン（安全管理ガイドライン第7.0版、Wi-Fi 6E/7、PoE 802.3btなど）に合わせて内容を更新しています。"
+topics: ["network", "wifi", "security", "infra"]
+published: false
+price: 0
+toc_depth: 3
+chapters:
+  - operations
+  - wired-basics
+  - wireless-design
+  - wireless-security
+  - troubleshooting
+  - security
