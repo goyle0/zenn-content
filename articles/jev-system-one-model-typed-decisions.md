@@ -3,7 +3,7 @@ title: "話題の「Jev」は何が新しいのか、文章を作らず判断と
 emoji: "🎯"
 type: "tech"
 topics: ["ai", "llm", "jev", "typesafe", "api"]
-published: false
+published: true
 ---
 
 ## 結論
