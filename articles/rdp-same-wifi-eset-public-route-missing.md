@@ -328,11 +328,11 @@ VPNを切ったあとに、ローカルネットワークからのRDPがおか�
 
 同じWi-Fi内のRDPが失敗するときは、まずエラーコードで「入口で止まっているのか、途中で切れているのか」を分けると、見る場所を絞り込めます。入口で止まっているなら受け側のファイアウォールとネットワークの扱いを、途中で切れているなら経路やVPNを疑います。今回の経験から、次に同じことが起きたときは次の順で確認します。
 
-1. ping は判断材料にせず、`Test-NetConnection &lt;IP&gt; -Port 3389` で入口まで届くかを見る（`InterfaceAlias` で通り道も分かる）
+1. ping は判断材料にせず、`Test-NetConnection <IP> -Port 3389` で入口まで届くかを見る（`InterfaceAlias` で通り道も分かる）
 2. `arp -a` で相手のMACアドレスが出るかを見る（出ればWi-Fiルーターの端末間通信禁止は原因ではない）
 3. `root/SecurityCenter2` の `FirewallProduct` で、実際に判定しているファイアウォール製品を確認する（他社製が入っていればWindows ファイアウォールの規則は効かない）
 4. パブリック／プライベートの扱いは受け側で変える。ESETはWindowsとは別に扱いを覚えているので、ESET側も確認する
-5. 同じネットワーク内なのにTTLが127なら、`Find-NetRoute -RemoteIPAddress &lt;相手&gt;` で NextHop がルーターになっていないかを見る
+5. 同じネットワーク内なのにTTLが127なら、`Find-NetRoute -RemoteIPAddress <相手>` で NextHop がルーターになっていないかを見る
 6. VPNクライアントを使ったあとは経路表を確認する。リモート操作中なら `New-NetRoute ... -PolicyStore ActiveStore` で回線を切らずに戻せる
 
 ## 参考
